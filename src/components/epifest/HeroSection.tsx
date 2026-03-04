@@ -9,11 +9,11 @@ const HeroSection = ({ onRegisterClick }: HeroSectionProps) => {
   return (
     <section id="inicio" className="relative min-h-screen flex items-center bg-hero-pattern overflow-hidden">
       {/* Decorative elements */}
-      <div className="absolute top-20 right-0 w-64 md:w-96 opacity-20 animate-float">
-        <BrainFlowerSvg />
+      <div className="absolute top-20 right-0 w-64 md:w-96 opacity-30 animate-float">
+        <img src={brainFlowersImg} alt="" className="w-full h-full object-contain" />
       </div>
-      <div className="absolute bottom-10 left-10 w-32 opacity-10 animate-float" style={{ animationDelay: '2s' }}>
-        <BrainFlowerSvg />
+      <div className="absolute bottom-10 left-10 w-32 opacity-15 animate-float" style={{ animationDelay: '2s' }}>
+        <img src={brainFlowersImg} alt="" className="w-full h-full object-contain" />
       </div>
 
       <div className="container mx-auto px-4 md:px-8 pt-24 pb-16 relative z-10">
