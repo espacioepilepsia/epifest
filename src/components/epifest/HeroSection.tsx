@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import BrainFlowerSvg from './BrainFlowerSvg';
+import brainFlowersImg from '@/assets/brain-flowers-hero.png';
 
 interface HeroSectionProps {
   onRegisterClick: () => void;
