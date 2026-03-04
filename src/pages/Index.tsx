@@ -1,12 +1,34 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import Header from '@/components/epifest/Header';
+import HeroSection from '@/components/epifest/HeroSection';
+import AboutSection from '@/components/epifest/AboutSection';
+import ProgramSection from '@/components/epifest/ProgramSection';
+import SpeakersSection from '@/components/epifest/SpeakersSection';
+import MerchSection from '@/components/epifest/MerchSection';
+import DonateSection from '@/components/epifest/DonateSection';
+import SponsorsSection from '@/components/epifest/SponsorsSection';
+import ContactSection from '@/components/epifest/ContactSection';
+import PastEditionsSection from '@/components/epifest/PastEditionsSection';
+import Footer from '@/components/epifest/Footer';
+import RegistrationModal from '@/components/epifest/RegistrationModal';
 
 const Index = () => {
+  const [registerOpen, setRegisterOpen] = useState(false);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Header onRegisterClick={() => setRegisterOpen(true)} />
+      <HeroSection onRegisterClick={() => setRegisterOpen(true)} />
+      <AboutSection />
+      <ProgramSection />
+      <SpeakersSection />
+      <MerchSection />
+      <DonateSection />
+      <SponsorsSection />
+      <ContactSection />
+      <PastEditionsSection />
+      <Footer />
+      <RegistrationModal open={registerOpen} onClose={() => setRegisterOpen(false)} />
     </div>
   );
 };
