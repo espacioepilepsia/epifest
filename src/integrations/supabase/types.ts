@@ -14,7 +14,168 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          extra_data: Json | null
+          id: string
+          message: string
+          name: string
+          organization: string | null
+          read: boolean
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          extra_data?: Json | null
+          id?: string
+          message: string
+          name: string
+          organization?: string | null
+          read?: boolean
+          type: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          extra_data?: Json | null
+          id?: string
+          message?: string
+          name?: string
+          organization?: string | null
+          read?: boolean
+          type?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          mercadopago_url: string | null
+          name: string
+          photo_url: string | null
+          price: number
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          mercadopago_url?: string | null
+          name: string
+          photo_url?: string | null
+          price?: number
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          mercadopago_url?: string | null
+          name?: string
+          photo_url?: string | null
+          price?: number
+          visible?: boolean
+        }
+        Relationships: []
+      }
+      registrations: {
+        Row: {
+          country: string
+          created_at: string
+          email: string
+          id: string
+          name: string
+          profile: string
+        }
+        Insert: {
+          country: string
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          profile: string
+        }
+        Update: {
+          country?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          profile?: string
+        }
+        Relationships: []
+      }
+      speakers: {
+        Row: {
+          bio: string | null
+          created_at: string
+          display_order: number
+          id: string
+          institution: string | null
+          name: string
+          photo_url: string | null
+          title: string | null
+          visible: boolean
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          institution?: string | null
+          name: string
+          photo_url?: string | null
+          title?: string | null
+          visible?: boolean
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          institution?: string | null
+          name?: string
+          photo_url?: string | null
+          title?: string | null
+          visible?: boolean
+        }
+        Relationships: []
+      }
+      sponsors: {
+        Row: {
+          display_order: number
+          id: string
+          logo_url: string | null
+          name: string
+          visible: boolean
+          website_url: string | null
+        }
+        Insert: {
+          display_order?: number
+          id?: string
+          logo_url?: string | null
+          name: string
+          visible?: boolean
+          website_url?: string | null
+        }
+        Update: {
+          display_order?: number
+          id?: string
+          logo_url?: string | null
+          name?: string
+          visible?: boolean
+          website_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
