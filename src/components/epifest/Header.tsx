@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import epifestLogo from '@/assets/epifest-logo.png';
 
 const navLinks = [
   { label: 'Inicio', href: '#inicio' },
