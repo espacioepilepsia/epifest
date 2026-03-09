@@ -13,6 +13,7 @@ import AdminProducts from "./pages/AdminProducts";
 import AdminMessages from "./pages/AdminMessages";
 import AdminRegistrations from "./pages/AdminRegistrations";
 import AdminSponsors from "./pages/AdminSponsors";
+import AdminSchedule from "./pages/AdminSchedule";
 import Edition2022 from "./pages/Edition2022";
 import Edition2023 from "./pages/Edition2023";
 import Edition2024 from "./pages/Edition2024";
