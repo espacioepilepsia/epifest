@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const editions = [
   { year: '2025', tagline: '4ta Edición — Expandiendo fronteras', link: '#' },
