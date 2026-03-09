@@ -33,7 +33,7 @@ const Header = ({ onRegisterClick }: HeaderProps) => {
     >
       <div className="container mx-auto flex items-center justify-between py-4 px-4 md:px-8">
         <a href="#inicio">
-          <img src={epifestLogo} alt="epifest! 5° Edición" className="h-10 w-auto" />
+          <img src={epifestLogo} alt="epifest! 5° Edición" className="h-16 w-auto" />
         </a>
 
         {/* Desktop nav */}
