@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { LayoutDashboard, Users, Package, MessageSquare, ClipboardList, Building2, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, Package, MessageSquare, ClipboardList, Building2, CalendarDays, LogOut, Menu, X } from 'lucide-react';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
