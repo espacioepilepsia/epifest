@@ -99,7 +99,7 @@ const Edition2022 = () => {
                   {day.title}
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="grid gap-6 py-4">
+                  <div className="grid gap-10 py-4">
                     {day.videos.map((url, j) => {
                       const videoId = extractYouTubeId(url);
                       return (
