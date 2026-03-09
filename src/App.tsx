@@ -13,6 +13,7 @@ import AdminProducts from "./pages/AdminProducts";
 import AdminMessages from "./pages/AdminMessages";
 import AdminRegistrations from "./pages/AdminRegistrations";
 import AdminSponsors from "./pages/AdminSponsors";
+import Edition2022 from "./pages/Edition2022";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/edicion/2022" element={<Edition2022 />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
