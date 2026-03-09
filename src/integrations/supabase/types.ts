@@ -113,6 +113,45 @@ export type Database = {
         }
         Relationships: []
       }
+      schedule_items: {
+        Row: {
+          block_name: string
+          created_at: string
+          day: number
+          display_order: number
+          id: string
+          is_break: boolean
+          speaker: string
+          talk_title: string
+          time_arg: string
+          topic: string
+        }
+        Insert: {
+          block_name?: string
+          created_at?: string
+          day?: number
+          display_order?: number
+          id?: string
+          is_break?: boolean
+          speaker?: string
+          talk_title?: string
+          time_arg?: string
+          topic?: string
+        }
+        Update: {
+          block_name?: string
+          created_at?: string
+          day?: number
+          display_order?: number
+          id?: string
+          is_break?: boolean
+          speaker?: string
+          talk_title?: string
+          time_arg?: string
+          topic?: string
+        }
+        Relationships: []
+      }
       speakers: {
         Row: {
           bio: string | null
