@@ -18,6 +18,7 @@ import Edition2022 from "./pages/Edition2022";
 import Edition2023 from "./pages/Edition2023";
 import Edition2024 from "./pages/Edition2024";
 import Edition2025 from "./pages/Edition2025";
+import Programa from "./pages/Programa";
 
 const queryClient = new QueryClient();
 
