@@ -20,7 +20,7 @@ const Index = () => {
       <Header onRegisterClick={() => setRegisterOpen(true)} />
       <HeroSection onRegisterClick={() => setRegisterOpen(true)} />
       <AboutSection />
-      <ProgramSection />
+      
       <SpeakersSection />
       <MerchSection />
       <DonateSection />
