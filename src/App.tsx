@@ -19,6 +19,7 @@ import Edition2023 from "./pages/Edition2023";
 import Edition2024 from "./pages/Edition2024";
 import Edition2025 from "./pages/Edition2025";
 import Programa from "./pages/Programa";
+import AdminSocialLinks from "./pages/AdminSocialLinks";
 
 const queryClient = new QueryClient();
 
