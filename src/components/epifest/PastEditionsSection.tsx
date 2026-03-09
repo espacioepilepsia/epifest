@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const editions = [
   { year: '2025', tagline: '4ta Edición — Expandiendo fronteras', link: '#' },
   { year: '2024', tagline: '3ra Edición — Comunidad en acción', link: '#' },
-  { year: '2023', tagline: '2da Edición — Rompiendo estigmas', link: '#' },
+  { year: '2023', tagline: '2da Edición — Rompiendo estigmas', link: '/edicion/2023' },
   { year: '2022', tagline: '1ra Edición — El comienzo', link: '/edicion/2022' },
 ];
 
