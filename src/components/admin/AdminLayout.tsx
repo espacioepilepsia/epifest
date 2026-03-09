@@ -10,6 +10,7 @@ const navItems = [
   { label: 'Mensajes', icon: MessageSquare, path: '/admin/messages' },
   { label: 'Inscripciones', icon: ClipboardList, path: '/admin/registrations' },
   { label: 'Sponsors', icon: Building2, path: '/admin/sponsors' },
+  { label: 'Cronograma', icon: CalendarDays, path: '/admin/schedule' },
 ];
 
 const AdminLayout = () => {

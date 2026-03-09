@@ -41,6 +41,7 @@ const App = () => (
             <Route path="messages" element={<AdminMessages />} />
             <Route path="registrations" element={<AdminRegistrations />} />
             <Route path="sponsors" element={<AdminSponsors />} />
+            <Route path="schedule" element={<AdminSchedule />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
