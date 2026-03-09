@@ -34,6 +34,7 @@ const App = () => (
           <Route path="/edicion/2023" element={<Edition2023 />} />
           <Route path="/edicion/2024" element={<Edition2024 />} />
           <Route path="/edicion/2025" element={<Edition2025 />} />
+          <Route path="/programa" element={<Programa />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
