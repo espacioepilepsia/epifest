@@ -152,6 +152,33 @@ export type Database = {
         }
         Relationships: []
       }
+      social_links: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          platform: string
+          url: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          platform: string
+          url?: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          platform?: string
+          url?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
       speakers: {
         Row: {
           bio: string | null
