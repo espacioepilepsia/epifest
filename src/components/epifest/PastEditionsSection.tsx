@@ -27,20 +27,23 @@ const PastEditionsSection = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {editions.map((ed, i) => (
-            <motion.a
+            <motion.div
               key={ed.year}
-              href="#"
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.1 + i * 0.1, duration: 0.4 }}
-              className="glass-card rounded-2xl p-6 hover:scale-105 transition-transform group"
             >
-              <p className="text-3xl font-extrabold text-gradient-gold mb-2">{ed.year}</p>
-              <p className="text-xs text-foreground/60 mb-4">{ed.tagline}</p>
-              <span className="text-sm text-accent flex items-center gap-1 group-hover:gap-2 transition-all">
-                Ver edición <ArrowRight className="w-3 h-3" />
-              </span>
-            </motion.a>
+              <Link
+                to={ed.link}
+                className="glass-card rounded-2xl p-6 hover:scale-105 transition-transform group block"
+              >
+                <p className="text-3xl font-extrabold text-gradient-gold mb-2">{ed.year}</p>
+                <p className="text-xs text-foreground/60 mb-4">{ed.tagline}</p>
+                <span className="text-sm text-accent flex items-center gap-1 group-hover:gap-2 transition-all">
+                  Ver edición <ArrowRight className="w-3 h-3" />
+                </span>
+              </Link>
+            </motion.div>
           ))}
         </div>
       </div>
