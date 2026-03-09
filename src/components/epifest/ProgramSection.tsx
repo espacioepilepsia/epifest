@@ -1,29 +1,87 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Monitor, Sun, Palette, MessageCircle, Brain, Heart } from 'lucide-react';
+import { Clock, Coffee, Globe } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
-const day1Topics = [
-  { icon: Brain, title: 'Charlas interactivas', desc: 'Neurobiología, manejo de crisis, dieta cetogénica, cannabis medicinal, salud reproductiva' },
-  { icon: MessageCircle, title: 'Diálogos en Espejo', desc: 'Diálogo de 30 min entre neurólogo/a y Paciente Experto/a' },
-  { icon: Heart, title: 'Consultorio Abierto: Temas Tabú', desc: 'Q&A anónimo sobre sexualidad, miedos, discriminación, futuro' },
-  { icon: Palette, title: 'Activación artística virtual', desc: '"¿Qué se siente tener una crisis?" — experiencia inmersiva' },
+interface ScheduleItem {
+  id: string;
+  day: number;
+  block_name: string;
+  talk_title: string;
+  topic: string;
+  speaker: string;
+  time_arg: string;
+  display_order: number;
+  is_break: boolean;
+}
+
+const TIMEZONE_OFFSETS = [
+  { label: '🇦🇷 ARG', offset: 0 },
+  { label: '🇨🇱 Chile', offset: -1 },
+  { label: '🇨🇴 COL/PER', offset: -2 },
+  { label: '🇲🇽 MÉX', offset: -3 },
 ];
 
-const day1Extra = ['Salud Mental', 'Autonomía Laboral', 'Violencia de Género y Epilepsia', 'Adherencia y Acceso a Tratamiento'];
+function convertTime(timeArg: string, offsetHours: number): string {
+  if (!timeArg) return '';
+  const [h, m] = timeArg.split(':').map(Number);
+  let newH = h + offsetHours;
+  if (newH < 0) newH += 24;
+  if (newH >= 24) newH -= 24;
+  return `${String(newH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
 
-const day2Topics = [
-  { icon: Monitor, title: 'Mañana: Charlas online', desc: 'Continúan las charlas interactivas en formato virtual' },
-  { icon: Sun, title: '16:00hs — Picnic Presencial', desc: 'Apagamos pantallas → Encuentro comunitario al aire libre' },
-  { icon: Palette, title: 'Taller de arteterapia', desc: 'Creación colectiva en comunidad' },
-  { icon: Heart, title: 'Workshop de Primeros Auxilios', desc: 'Primeros auxilios con movimiento — aprender haciendo' },
-];
+interface Block {
+  name: string;
+  items: ScheduleItem[];
+}
+
+function groupByBlocks(items: ScheduleItem[]): Block[] {
+  const blocks: Block[] = [];
+  let current: Block | null = null;
+
+  for (const item of items) {
+    const blockKey = item.block_name || (item.is_break ? '__break__' : '__general__');
+
+    if (!current || (item.block_name && current.name !== item.block_name) || (!item.block_name && current.name !== blockKey)) {
+      current = { name: item.block_name, items: [item] };
+      blocks.push(current);
+    } else {
+      current.items.push(item);
+    }
+  }
+  return blocks;
+}
 
 const ProgramSection = () => {
   const [activeDay, setActiveDay] = useState<1 | 2>(1);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
-  const topics = activeDay === 1 ? day1Topics : day2Topics;
+  const { data: scheduleItems = [] } = useQuery({
+    queryKey: ['schedule_items'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('schedule_items')
+        .select('*')
+        .order('display_order', { ascending: true });
+      if (error) throw error;
+      return data as ScheduleItem[];
+    },
+  });
+
+  const dayItems = useMemo(
+    () => scheduleItems.filter((i) => i.day === activeDay),
+    [scheduleItems, activeDay]
+  );
+  const blocks = useMemo(() => groupByBlocks(dayItems), [dayItems]);
 
   return (
     <section id="programa" className="section-padding bg-muted/30" ref={ref}>
@@ -31,12 +89,28 @@ const ProgramSection = () => {
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          className="text-3xl md:text-5xl font-extrabold mb-10"
+          className="text-3xl md:text-5xl font-extrabold mb-4"
         >
           Programa
         </motion.h2>
 
-        {/* Tab selector */}
+        {/* Timezone reference */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.2 }}
+          className="flex items-center gap-2 flex-wrap mb-10 text-xs text-muted-foreground"
+        >
+          <Globe className="w-4 h-4" />
+          <span>Horarios de referencia:</span>
+          {TIMEZONE_OFFSETS.map((tz) => (
+            <span key={tz.label} className="glass-card rounded-full px-3 py-1">
+              {tz.label}
+            </span>
+          ))}
+        </motion.div>
+
+        {/* Day tabs */}
         <div className="flex gap-3 mb-10">
           <button
             onClick={() => setActiveDay(1)}
@@ -44,7 +118,7 @@ const ProgramSection = () => {
               activeDay === 1 ? 'bg-secondary text-secondary-foreground' : 'glass-card'
             }`}
           >
-            Día 1 — Jue 26/03
+            Día 1 — "Conocer es Poder"
           </button>
           <button
             onClick={() => setActiveDay(2)}
@@ -52,47 +126,105 @@ const ProgramSection = () => {
               activeDay === 2 ? 'bg-secondary text-secondary-foreground' : 'glass-card'
             }`}
           >
-            Día 2 — Vie 27/03
+            Día 2 — "Mi Vida, Mi Ritmo"
           </button>
         </div>
 
-        {/* Day subtitle */}
         <p className="font-handwritten text-xl text-accent mb-8">
-          {activeDay === 1 ? '"La Frontera Digital" — 100% Virtual' : '"El Gran Cierre" — Híbrido'}
+          {activeDay === 1
+            ? '"Conocer es Poder" — Teoría Médica'
+            : '"Mi Vida, Mi Ritmo" — Estilo de Vida y Futuro'}
         </p>
 
-        {/* Topics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {topics.map((topic, i) => (
-            <motion.div
-              key={topic.title}
-              initial={{ opacity: 0, x: -20 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ delay: 0.1 + i * 0.1, duration: 0.4 }}
-              className="glass-card rounded-2xl p-6 flex gap-4"
-            >
-              <topic.icon className="w-8 h-8 text-accent flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-bold text-lg mb-1">{topic.title}</h3>
-                <p className="text-sm text-foreground/70">{topic.desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {/* Blocks */}
+        <Accordion type="multiple" className="space-y-4">
+          {blocks.map((block, bi) => {
+            // If block has no name (apertura/cierre/break), render items directly
+            if (!block.name) {
+              return block.items.map((item, ii) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.1 + bi * 0.05 + ii * 0.03 }}
+                >
+                  <TalkRow item={item} />
+                </motion.div>
+              ));
+            }
 
-        {/* Day 1 extra topics */}
-        {activeDay === 1 && (
-          <div className="flex flex-wrap gap-3">
-            {day1Extra.map((tag) => (
-              <span key={tag} className="glass-card rounded-full px-4 py-2 text-xs font-medium">
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
+            return (
+              <motion.div
+                key={block.name + bi}
+                initial={{ opacity: 0, y: 15 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.1 + bi * 0.08 }}
+              >
+                <AccordionItem
+                  value={`block-${bi}`}
+                  className="glass-card rounded-2xl border-none px-6"
+                >
+                  <AccordionTrigger className="text-base md:text-lg font-bold hover:no-underline">
+                    {block.name}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3 pb-2">
+                      {block.items.map((item) => (
+                        <TalkRow key={item.id} item={item} />
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </motion.div>
+            );
+          })}
+        </Accordion>
       </div>
     </section>
   );
 };
+
+function TalkRow({ item }: { item: ScheduleItem }) {
+  return (
+    <div
+      className={`rounded-xl p-4 flex flex-col md:flex-row gap-3 ${
+        item.is_break
+          ? 'bg-accent/10 border border-accent/20'
+          : 'glass-card'
+      }`}
+    >
+      {/* Times */}
+      <div className="flex-shrink-0 md:w-48">
+        <div className="flex items-center gap-2 text-sm font-semibold text-accent">
+          {item.is_break ? <Coffee className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+          {item.time_arg} hs
+        </div>
+        <div className="flex gap-2 mt-1 flex-wrap">
+          {TIMEZONE_OFFSETS.slice(1).map((tz) => (
+            <span key={tz.label} className="text-[10px] text-muted-foreground">
+              {tz.label} {convertTime(item.time_arg, tz.offset)}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <h4 className="font-bold text-sm md:text-base">
+          {item.talk_title}
+          {item.topic && (
+            <span className="font-normal text-foreground/70">
+              {' — '}
+              {item.topic}
+            </span>
+          )}
+        </h4>
+        {item.speaker && (
+          <p className="text-xs text-muted-foreground mt-1">{item.speaker}</p>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default ProgramSection;
