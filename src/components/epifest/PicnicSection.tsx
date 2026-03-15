@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { MapPin, Clock, Users, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const highlights = [
   { icon: Calendar, label: 'Fecha',       value: '27 de marzo 2026' },
@@ -12,6 +13,19 @@ const highlights = [
 const PicnicSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const navigate = useNavigate();
+
+  const handlePicnicClick = () => {
+    // Guardamos el intent para que ContactSection lo lea
+    sessionStorage.setItem('contactAsunto', 'picnic');
+    // Scroll al contacto
+    const el = document.getElementById('contacto');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/#contacto');
+    }
+  };
 
   return (
     <section id="picnic" className="section-padding relative overflow-hidden" ref={ref}>
@@ -75,12 +89,12 @@ const PicnicSection = () => {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <a
-                href="#contacto"
+              <button
+                onClick={handlePicnicClick}
                 className="btn-gold text-sm inline-block"
               >
                 Quiero participar
-              </a>
+              </button>
             </motion.div>
           </div>
 
