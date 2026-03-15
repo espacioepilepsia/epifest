@@ -72,20 +72,25 @@ const Header = ({ onRegisterClick }: HeaderProps) => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? 'bg-primary/95 backdrop-blur-md shadow-lg'
-          : 'bg-primary/80 backdrop-blur-sm'
+          ? 'shadow-lg border-b border-white/10'
+          : ''
       }`}
+      style={{
+        backgroundColor: scrolled ? 'rgba(37, 21, 83, 0.97)' : 'rgba(37, 21, 83, 0.75)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+      }}
     >
-      <div className="container mx-auto flex items-center justify-between py-4 px-4 md:px-8">
+      <div className="container mx-auto flex items-center justify-between py-3 px-4 md:px-8">
 
         {/* Logo → siempre lleva al home */}
-        <a href="/" onClick={handleLogoClick} className="cursor-pointer">
+        <a href="/" onClick={handleLogoClick} className="cursor-pointer flex-shrink-0">
           <img
             src={epifestLogo}
             alt="epifest! 5° Edición"
-            className="h-20 md:h-24 w-auto"
+            className="h-14 md:h-16 w-auto"
           />
         </a>
 
@@ -96,7 +101,7 @@ const Header = ({ onRegisterClick }: HeaderProps) => {
               key={link.label}
               href={link.href}
               onClick={(e) => handleNavClick(e, link)}
-              className="text-sm font-medium text-primary-foreground/90 hover:text-primary-foreground transition-colors cursor-pointer"
+              className="text-sm font-medium text-white/80 hover:text-white transition-colors cursor-pointer tracking-wide"
             >
               {link.label}
             </a>
@@ -111,7 +116,7 @@ const Header = ({ onRegisterClick }: HeaderProps) => {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden p-2 text-primary-foreground"
+          className="md:hidden p-2 text-white"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -120,13 +125,16 @@ const Header = ({ onRegisterClick }: HeaderProps) => {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden bg-primary/98 backdrop-blur-md border-t border-border px-4 pb-6">
-          <nav className="flex flex-col gap-4 pt-4">
+        <div
+          className="md:hidden border-t border-white/10 px-4 pb-6"
+          style={{ backgroundColor: 'rgba(37, 21, 83, 0.99)' }}
+        >
+          <nav className="flex flex-col gap-1 pt-4">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
-                className="text-sm font-medium py-2 text-primary-foreground/90 hover:text-primary-foreground cursor-pointer"
+                className="text-sm font-medium py-3 px-2 text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
                 onClick={(e) => handleNavClick(e, link)}
               >
                 {link.label}
@@ -134,7 +142,7 @@ const Header = ({ onRegisterClick }: HeaderProps) => {
             ))}
             <button
               onClick={() => { onRegisterClick(); setMenuOpen(false); }}
-              className="btn-gold text-sm mt-2"
+              className="btn-gold text-sm mt-3"
             >
               ¡Inscribite!
             </button>
