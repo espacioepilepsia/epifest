@@ -72,6 +72,7 @@ const ContactSection = () => {
   const [asunto, setAsunto] = useState('');
   const [caba, setCaba] = useState('');
   const [noCaba, setNoCaba] = useState(false);
+  const [fromPicnic, setFromPicnic] = useState(false); // true solo si vino del botón del picnic
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
@@ -83,6 +84,7 @@ const ContactSection = () => {
       setAsunto(detail);
       setCaba('');
       setNoCaba(false);
+      setFromPicnic(true); // vino del botón del picnic
       setSuccess(false);
     };
     window.addEventListener('setContactAsunto', handler);
@@ -93,6 +95,7 @@ const ContactSection = () => {
       sessionStorage.removeItem('contactAsunto');
       setActiveTab('general');
       setAsunto(intent);
+      setFromPicnic(true);
     }
 
     return () => window.removeEventListener('setContactAsunto', handler);
@@ -187,6 +190,7 @@ const ContactSection = () => {
     setAsunto('');
     setCaba('');
     setNoCaba(false);
+    setFromPicnic(false);
   };
 
   const inputClass =
@@ -292,6 +296,7 @@ const ContactSection = () => {
                       setAsunto(e.target.value);
                       setCaba('');
                       setNoCaba(false);
+                      setFromPicnic(false); // cambio manual → ya no es flujo del picnic
                     }}
                     className={selectClass}
                   >
@@ -309,8 +314,8 @@ const ContactSection = () => {
                   </div>
                 </div>
 
-                {/* Campo CABA — solo si el asunto es picnic */}
-                {asunto === 'picnic' && (
+                {/* Campo CABA — aparece si el asunto es picnic (por cualquier vía) */}
+                {(asunto === 'picnic' || fromPicnic) && (
                   <motion.div
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
