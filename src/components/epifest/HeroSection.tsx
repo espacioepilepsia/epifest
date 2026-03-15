@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 // ── Countdown ─────────────────────────────────────────────────────────────────
-const TARGET = new Date('2026-03-25T13:00:00Z'); // 25/03/2026 10:00 ARG (UTC-3)
+const TARGET = new Date('2026-03-26T13:00:00Z'); // 26/03/2026 10:00 ARG (UTC-3)
 
 function getTimeLeft() {
   const diff = TARGET.getTime() - Date.now();
@@ -61,7 +61,7 @@ const Countdown = () => {
         <span className="text-2xl md:text-4xl font-extrabold text-accent mb-3 md:mb-4 leading-none">:</span>
         <CountdownUnit value={time.seconds} label="segundos" />
       </div>
-      <p className="text-xs text-muted-foreground">25 de marzo de 2026 · 10:00 hs (ARG)</p>
+      <p className="text-xs text-muted-foreground">26 de marzo de 2026 · 10:00 hs (ARG)</p>
     </div>
   );
 };

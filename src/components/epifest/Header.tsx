@@ -4,12 +4,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import epifestLogo from '@/assets/epifest-logo.png';
 
 const navLinks = [
-  { label: 'Inicio',    href: '/',         section: 'inicio' },
+  { label: 'Inicio',    href: '/',          section: 'inicio' },
   { label: 'Programa',  href: '/programa',  section: null },
-  { label: 'Oradores',  href: '/',         section: 'oradores' },
-  { label: 'Tienda',    href: '/',         section: 'tienda' },
-  { label: 'Doná',      href: '/',         section: 'dona' },
-  { label: 'Contacto',  href: '/',         section: 'contacto' },
+  { label: 'Oradores',  href: '/oradores',  section: null },
+  { label: 'Tienda',    href: '/tienda',    section: null },
+  { label: 'Doná',      href: '/dona',      section: null },
+  { label: 'Contacto',  href: '/',          section: 'contacto' },
 ];
 
 interface HeaderProps {
