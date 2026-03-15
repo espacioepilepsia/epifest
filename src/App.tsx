@@ -19,6 +19,9 @@ import Edition2023 from "./pages/Edition2023";
 import Edition2024 from "./pages/Edition2024";
 import Edition2025 from "./pages/Edition2025";
 import Programa from "./pages/Programa";
+import Oradores from "./pages/Oradores";
+import Tienda from "./pages/Tienda";
+import Dona from "./pages/Dona";
 import AdminSocialLinks from "./pages/AdminSocialLinks";
 
 const queryClient = new QueryClient();
@@ -31,11 +34,14 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/programa" element={<Programa />} />
+          <Route path="/oradores" element={<Oradores />} />
+          <Route path="/tienda" element={<Tienda />} />
+          <Route path="/dona" element={<Dona />} />
           <Route path="/edicion/2022" element={<Edition2022 />} />
           <Route path="/edicion/2023" element={<Edition2023 />} />
           <Route path="/edicion/2024" element={<Edition2024 />} />
           <Route path="/edicion/2025" element={<Edition2025 />} />
-          <Route path="/programa" element={<Programa />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
