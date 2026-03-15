@@ -16,14 +16,18 @@ const PicnicSection = () => {
   const navigate = useNavigate();
 
   const handlePicnicClick = () => {
-    // Guardamos el intent para que ContactSection lo lea
-    sessionStorage.setItem('contactAsunto', 'picnic');
-    // Scroll al contacto
     const el = document.getElementById('contacto');
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      // Disparamos evento custom ANTES del scroll para que ContactSection lo capture
+      window.dispatchEvent(new CustomEvent('setContactAsunto', { detail: 'picnic' }));
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
     } else {
-      navigate('/#contacto');
+      sessionStorage.setItem('contactAsunto', 'picnic');
+      navigate('/');
+      setTimeout(() => {
+        const el2 = document.getElementById('contacto');
+        if (el2) el2.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
     }
   };
 

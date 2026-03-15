@@ -75,14 +75,27 @@ const ContactSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
-  // Lee el intent del picnic dejado por PicnicSection
+  // Escucha el evento custom de PicnicSection (componente ya montado en el DOM)
   useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      setActiveTab('general');
+      setAsunto(detail);
+      setCaba('');
+      setNoCaba(false);
+      setSuccess(false);
+    };
+    window.addEventListener('setContactAsunto', handler);
+
+    // Fallback: si venimos de otra página con sessionStorage
     const intent = sessionStorage.getItem('contactAsunto');
     if (intent) {
       sessionStorage.removeItem('contactAsunto');
       setActiveTab('general');
       setAsunto(intent);
     }
+
+    return () => window.removeEventListener('setContactAsunto', handler);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
