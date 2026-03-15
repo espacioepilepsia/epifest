@@ -10,6 +10,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
+// ── Tipos ─────────────────────────────────────────────────────────────────────
 interface ScheduleItem {
   id: string;
   day: number;
@@ -22,11 +23,12 @@ interface ScheduleItem {
   is_break: boolean;
 }
 
+// ── Timezones ─────────────────────────────────────────────────────────────────
 const TIMEZONE_OFFSETS = [
-  { label: '🇦🇷 ARG', offset: 0 },
-  { label: '🇨🇱 Chile', offset: -1 },
+  { label: '🇦🇷 ARG',    offset: 0  },
+  { label: '🇨🇱 Chile',   offset: -1 },
   { label: '🇨🇴 COL/PER', offset: -2 },
-  { label: '🇲🇽 MÉX', offset: -3 },
+  { label: '🇲🇽 MÉX',    offset: -3 },
 ];
 
 function convertTime(timeArg: string, offsetHours: number): string {
@@ -38,6 +40,7 @@ function convertTime(timeArg: string, offsetHours: number): string {
   return `${String(newH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
+// ── Agrupación por bloques ────────────────────────────────────────────────────
 interface Block {
   name: string;
   items: ScheduleItem[];
@@ -46,12 +49,10 @@ interface Block {
 function groupByBlocks(items: ScheduleItem[]): Block[] {
   const blocks: Block[] = [];
   let current: Block | null = null;
-
   for (const item of items) {
-    const blockKey = item.block_name || (item.is_break ? '__break__' : '__general__');
-
-    if (!current || (item.block_name && current.name !== item.block_name) || (!item.block_name && current.name !== blockKey)) {
-      current = { name: item.block_name, items: [item] };
+    const key = item.block_name || '';
+    if (!current || current.name !== key) {
+      current = { name: key, items: [item] };
       blocks.push(current);
     } else {
       current.items.push(item);
@@ -60,12 +61,13 @@ function groupByBlocks(items: ScheduleItem[]): Block[] {
   return blocks;
 }
 
+// ── Componente principal ──────────────────────────────────────────────────────
 const ProgramSection = () => {
   const [activeDay, setActiveDay] = useState<1 | 2>(1);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
-  const { data: scheduleItems = [] } = useQuery({
+  const { data: scheduleItems = [], isLoading } = useQuery({
     queryKey: ['schedule_items'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -86,6 +88,7 @@ const ProgramSection = () => {
   return (
     <section id="programa" className="section-padding bg-muted/30" ref={ref}>
       <div className="container mx-auto max-w-5xl">
+
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -111,7 +114,7 @@ const ProgramSection = () => {
         </motion.div>
 
         {/* Day tabs */}
-        <div className="flex gap-3 mb-10">
+        <div className="flex gap-3 mb-10 flex-wrap">
           <button
             onClick={() => setActiveDay(1)}
             className={`rounded-full px-6 py-3 font-bold text-sm transition-all ${
@@ -132,68 +135,82 @@ const ProgramSection = () => {
 
         <p className="font-handwritten text-xl text-accent mb-8">
           {activeDay === 1
-            ? '"Conocer es Poder" — Teoría Médica'
-            : '"Mi Vida, Mi Ritmo" — Estilo de Vida y Futuro'}
+            ? '"Conocer es Poder" — Teoría Médica · 25 de marzo 2026'
+            : '"Mi Vida, Mi Ritmo" — Estilo de Vida y Futuro · 26 de marzo 2026'}
         </p>
 
+        {/* Loading state */}
+        {isLoading && (
+          <div className="flex justify-center py-16">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-accent" />
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!isLoading && dayItems.length === 0 && (
+          <p className="text-muted-foreground text-center py-16">
+            El programa de este día estará disponible próximamente.
+          </p>
+        )}
+
         {/* Blocks */}
-        <Accordion type="multiple" className="space-y-4">
-          {blocks.map((block, bi) => {
-            // If block has no name (apertura/cierre/break), render items directly
-            if (!block.name) {
-              return block.items.map((item, ii) => (
+        {!isLoading && (
+          <Accordion type="multiple" className="space-y-4">
+            {blocks.map((block, bi) => {
+              if (!block.name) {
+                return block.items.map((item, ii) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ delay: 0.1 + bi * 0.05 + ii * 0.03 }}
+                  >
+                    <TalkRow item={item} />
+                  </motion.div>
+                ));
+              }
+
+              return (
                 <motion.div
-                  key={item.id}
+                  key={block.name + bi}
                   initial={{ opacity: 0, y: 15 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.1 + bi * 0.05 + ii * 0.03 }}
+                  transition={{ delay: 0.1 + bi * 0.08 }}
                 >
-                  <TalkRow item={item} />
+                  <AccordionItem
+                    value={`block-${bi}`}
+                    className="glass-card rounded-2xl border-none px-6"
+                  >
+                    <AccordionTrigger className="text-base md:text-lg font-bold hover:no-underline">
+                      {block.name}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-3 pb-2">
+                        {block.items.map((item) => (
+                          <TalkRow key={item.id} item={item} />
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
                 </motion.div>
-              ));
-            }
-
-            return (
-              <motion.div
-                key={block.name + bi}
-                initial={{ opacity: 0, y: 15 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.1 + bi * 0.08 }}
-              >
-                <AccordionItem
-                  value={`block-${bi}`}
-                  className="glass-card rounded-2xl border-none px-6"
-                >
-                  <AccordionTrigger className="text-base md:text-lg font-bold hover:no-underline">
-                    {block.name}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-3 pb-2">
-                      {block.items.map((item) => (
-                        <TalkRow key={item.id} item={item} />
-                      ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </motion.div>
-            );
-          })}
-        </Accordion>
+              );
+            })}
+          </Accordion>
+        )}
       </div>
     </section>
   );
 };
 
+// ── TalkRow ───────────────────────────────────────────────────────────────────
 function TalkRow({ item }: { item: ScheduleItem }) {
   return (
     <div
       className={`rounded-xl p-4 flex flex-col md:flex-row gap-3 ${
-        item.is_break
-          ? 'bg-accent/10 border border-accent/20'
-          : 'glass-card'
+        item.is_break ? 'bg-accent/10 border border-accent/20' : 'glass-card'
       }`}
     >
-      {/* Times */}
+      {/* Time */}
       <div className="flex-shrink-0 md:w-48">
         <div className="flex items-center gap-2 text-sm font-semibold text-accent">
           {item.is_break ? <Coffee className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
@@ -213,10 +230,7 @@ function TalkRow({ item }: { item: ScheduleItem }) {
         <h4 className="font-bold text-sm md:text-base">
           {item.talk_title}
           {item.topic && (
-            <span className="font-normal text-foreground/70">
-              {' — '}
-              {item.topic}
-            </span>
+            <span className="font-normal text-foreground/70"> — {item.topic}</span>
           )}
         </h4>
         {item.speaker && (
