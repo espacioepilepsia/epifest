@@ -1,7 +1,7 @@
+import { useState } from 'react';
 import Header from '@/components/epifest/Header';
 import ProgramSection from '@/components/epifest/ProgramSection';
 import Footer from '@/components/epifest/Footer';
-import { useState } from 'react';
 import RegistrationModal from '@/components/epifest/RegistrationModal';
 
 const Programa = () => {

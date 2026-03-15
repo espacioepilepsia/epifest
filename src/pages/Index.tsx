@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Header from '@/components/epifest/Header';
 import HeroSection from '@/components/epifest/HeroSection';
 import AboutSection from '@/components/epifest/AboutSection';
-
 import SpeakersSection from '@/components/epifest/SpeakersSection';
 import MerchSection from '@/components/epifest/MerchSection';
 import DonateSection from '@/components/epifest/DonateSection';
@@ -20,7 +19,6 @@ const Index = () => {
       <Header onRegisterClick={() => setRegisterOpen(true)} />
       <HeroSection onRegisterClick={() => setRegisterOpen(true)} />
       <AboutSection />
-      
       <SpeakersSection />
       <MerchSection />
       <DonateSection />
