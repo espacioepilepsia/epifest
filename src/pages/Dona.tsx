@@ -1,3 +1,4 @@
+import SEO from '@/components/epifest/SEO';
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -48,10 +49,11 @@ const Dona = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Doná" description="Ayudanos a que más personas accedan a información de calidad sobre epilepsia. Tu donación a la Fundación Espacio Epilepsia hace la diferencia." canonical="/dona" />
       <Header onRegisterClick={() => setRegisterOpen(true)} />
 
       {/* Hero */}
-      <div className="relative pt-32 pb-16 px-4 overflow-hidden">
+      <div className="relative pt-24 pb-16 px-4 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/3 w-[500px] h-[500px] rounded-full bg-primary/30 blur-[120px]" />
           <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] rounded-full bg-accent/10 blur-[100px]" />

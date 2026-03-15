@@ -1,3 +1,4 @@
+import SEO from '@/components/epifest/SEO';
 import { useRef, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -46,10 +47,11 @@ const Tienda = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Tienda" description="Merch oficial del epifest! 2026. Llevate un recuerdo del congreso y apoyá a la comunidad de epilepsia de Argentina y Latinoamérica." canonical="/tienda" />
       <Header onRegisterClick={() => setRegisterOpen(true)} />
 
       {/* Hero banner */}
-      <div className="relative pt-32 pb-16 px-4 overflow-hidden">
+      <div className="relative pt-24 pb-16 px-4 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 right-1/3 w-[400px] h-[400px] rounded-full bg-secondary/10 blur-[120px]" />
           <div className="absolute bottom-0 left-1/4 w-[300px] h-[300px] rounded-full bg-accent/10 blur-[100px]" />
