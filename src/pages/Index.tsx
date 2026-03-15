@@ -2,9 +2,7 @@ import { useState } from 'react';
 import Header from '@/components/epifest/Header';
 import HeroSection from '@/components/epifest/HeroSection';
 import AboutSection from '@/components/epifest/AboutSection';
-import SpeakersSection from '@/components/epifest/SpeakersSection';
-import MerchSection from '@/components/epifest/MerchSection';
-import DonateSection from '@/components/epifest/DonateSection';
+import PicnicSection from '@/components/epifest/PicnicSection';
 import SponsorsSection from '@/components/epifest/SponsorsSection';
 import ContactSection from '@/components/epifest/ContactSection';
 import PastEditionsSection from '@/components/epifest/PastEditionsSection';
@@ -19,9 +17,7 @@ const Index = () => {
       <Header onRegisterClick={() => setRegisterOpen(true)} />
       <HeroSection onRegisterClick={() => setRegisterOpen(true)} />
       <AboutSection />
-      <SpeakersSection />
-      <MerchSection />
-      <DonateSection />
+      <PicnicSection />
       <SponsorsSection />
       <ContactSection />
       <PastEditionsSection />
