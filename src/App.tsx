@@ -23,6 +23,7 @@ import Oradores from "./pages/Oradores";
 import Tienda from "./pages/Tienda";
 import Dona from "./pages/Dona";
 import InscripcionPicnic from "./pages/InscripcionPicnic";
+import InscripcionEpifest from "./pages/InscripcionEpifest";
 import AdminSocialLinks from "./pages/AdminSocialLinks";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/tienda" element={<Tienda />} />
           <Route path="/dona" element={<Dona />} />
           <Route path="/inscripcion-picnic" element={<InscripcionPicnic />} />
+          <Route path="/inscripciones-epifest" element={<InscripcionEpifest />} />
           <Route path="/edicion/2022" element={<Edition2022 />} />
           <Route path="/edicion/2023" element={<Edition2023 />} />
           <Route path="/edicion/2024" element={<Edition2024 />} />
