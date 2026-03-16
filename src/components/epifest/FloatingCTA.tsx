@@ -1,20 +1,26 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Sparkles, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { X } from 'lucide-react';
 
 const FloatingCTA = () => {
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const location = useLocation();
+
+  // No mostrar en la página de inscripción
+  const isInscripcionPage = location.pathname === '/inscripciones-epifest';
 
   useEffect(() => {
-    // Mostrar después de 3 segundos si no fue descartado
-    const dismissed = sessionStorage.getItem('ctaDismissed');
-    if (dismissed) return;
-
+    if (sessionStorage.getItem('ctaDismissed') || isInscripcionPage) return;
     const timer = setTimeout(() => setVisible(true), 3000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isInscripcionPage]);
+
+  // Ocultar si navega a la página de inscripción
+  useEffect(() => {
+    if (isInscripcionPage) setVisible(false);
+  }, [isInscripcionPage]);
 
   const handleDismiss = () => {
     setVisible(false);
@@ -22,31 +28,31 @@ const FloatingCTA = () => {
     sessionStorage.setItem('ctaDismissed', '1');
   };
 
-  if (dismissed) return null;
+  if (dismissed || isInscripcionPage) return null;
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ y: 100, opacity: 0 }}
+          initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
+          exit={{ y: 80, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-5 py-3 rounded-full shadow-2xl"
-          style={{ backgroundColor: 'rgba(37,21,83,0.97)', border: '1px solid rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)' }}
+          className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2"
         >
-          <Sparkles className="w-4 h-4 text-secondary flex-shrink-0" />
-          <span className="text-sm font-medium text-white/80 whitespace-nowrap">
-            26 y 27 de marzo — ¡es gratis!
-          </span>
           <Link
             to="/inscripciones-epifest"
-            className="btn-gold text-xs px-4 py-2 whitespace-nowrap"
             onClick={() => setVisible(false)}
+            className="btn-gold text-sm md:text-base px-6 py-3 shadow-2xl"
+            style={{ boxShadow: '0 8px 32px rgba(201,146,42,0.5)' }}
           >
-            Inscribite
+            🎉 ¡Inscribite al Epifest!
           </Link>
-          <button onClick={handleDismiss} className="text-white/40 hover:text-white transition-colors ml-1">
+          <button
+            onClick={handleDismiss}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-white/60 hover:text-white transition-colors"
+            style={{ backgroundColor: 'rgba(37,21,83,0.9)', border: '1px solid rgba(255,255,255,0.15)' }}
+          >
             <X className="w-4 h-4" />
           </button>
         </motion.div>
