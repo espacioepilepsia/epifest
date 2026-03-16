@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { MapPin, Clock, Users, Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const highlights = [
   { icon: Calendar, label: 'Fecha',     value: '27 de marzo 2026' },
@@ -9,7 +10,7 @@ const highlights = [
   { icon: Users,    label: 'Capacidad', value: '~40 personas' },
 ];
 
-const PICNIC_FORM_URL = 'https://forms.gle/Z2FzEbfq6DSaRUhcA';
+const PICNIC_FORM_URL = '/inscripcion-picnic';
 
 const PicnicSection = () => {
   const ref = useRef(null);
@@ -44,14 +45,12 @@ const PicnicSection = () => {
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 10 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5, delay: 0.4 }}>
-              <a
-                href={PICNIC_FORM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to={PICNIC_FORM_URL}
                 className="btn-gold text-sm inline-block"
               >
                 Quiero participar
-              </a>
+              </Link>
             </motion.div>
           </div>
 
