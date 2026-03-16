@@ -54,6 +54,7 @@ const OrganizerSection = () => {
                   src={org.logo}
                   alt={org.id}
                   className="w-44 h-auto object-contain"
+                  style={{ filter: 'brightness(0) invert(1)' }}
                 />
               </a>
 
