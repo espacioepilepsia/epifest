@@ -3,6 +3,7 @@ import Header from '@/components/epifest/Header';
 import HeroSection from '@/components/epifest/HeroSection';
 import AboutSection from '@/components/epifest/AboutSection';
 import PicnicSection from '@/components/epifest/PicnicSection';
+import OrganizerSection from '@/components/epifest/OrganizerSection';
 import SponsorsSection from '@/components/epifest/SponsorsSection';
 import ContactSection from '@/components/epifest/ContactSection';
 import PastEditionsSection from '@/components/epifest/PastEditionsSection';
@@ -20,6 +21,7 @@ const Index = () => {
       <HeroSection onRegisterClick={() => setRegisterOpen(true)} />
       <AboutSection />
       <PicnicSection />
+      <OrganizerSection />
       <SponsorsSection />
       <ContactSection />
       <PastEditionsSection />
