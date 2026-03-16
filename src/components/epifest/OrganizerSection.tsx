@@ -5,16 +5,19 @@ import laceLogo from '@/assets/lace-logo.png';
 
 const organizers = [
   {
-    name: 'Espacio Epilepsia',
+    id: 'espacio',
     logo: espacioLogo,
     url: 'https://espacioepilepsia.org/',
-    lines: ['Espacio Epilepsia'],
+    name: 'Espacio Epilepsia',
+    desc: 'Plataforma digital con el objetivo de informar, compartir experiencias y contener a las personas con epilepsia, sus familiares y amigos.',
   },
   {
-    name: 'LACE',
+    id: 'lace',
     logo: laceLogo,
     url: 'https://www.lace.org.ar/',
-    lines: ['LACE', 'Liga Argentina', 'Contra la Epilepsia'],
+    name: 'LACE',
+    fullName: 'Liga Argentina Contra la Epilepsia',
+    desc: 'Primera entidad creada en Latinoamérica con el propósito de difundir los conocimientos relacionados a las epilepsias y colaborar en temas referentes al perfil social e información de la población.',
   },
 ];
 
@@ -23,50 +26,60 @@ const OrganizerSection = () => {
   const isInView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section className="py-16 px-4 relative overflow-hidden" ref={ref}>
-      <div className="container mx-auto max-w-5xl relative z-10">
+    <section className="py-16 px-4" ref={ref}>
+      <div className="container mx-auto max-w-5xl">
 
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
-          className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/40 text-center mb-10"
+          className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/40 text-center mb-12"
         >
           Organiza
         </motion.p>
 
-        <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {organizers.map((org, i) => (
             <motion.a
-              key={org.name}
+              key={org.id}
               href={org.url}
               target="_blank"
               rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: i * 0.2, duration: 0.6 }}
-              className="flex flex-col items-center gap-3 group"
+              className="glass-card rounded-2xl p-8 flex flex-col items-center text-center gap-5 hover:scale-[1.02] transition-transform duration-300 group"
             >
-              <img
-                src={org.logo}
-                alt={org.name}
-                className="h-20 md:h-24 w-auto object-contain group-hover:scale-105 transition-transform duration-300 opacity-90 group-hover:opacity-100"
-                style={{ mixBlendMode: 'screen' }}
-              />
-              <div className="text-center">
-                {org.lines.map((line, j) => (
-                  <p
-                    key={j}
-                    className={`leading-tight transition-colors ${
-                      j === 0
-                        ? 'font-bold text-sm md:text-base text-foreground/80 group-hover:text-foreground'
-                        : 'text-xs text-foreground/50 group-hover:text-foreground/70'
-                    }`}
-                  >
-                    {line}
-                  </p>
-                ))}
+              {/* Logo: invert hace blanco→negro y negro→blanco,
+                  luego invert de vuelta queda blanco sobre transparente
+                  gracias a brightness+contrast */}
+              <div className="h-24 flex items-center justify-center">
+                <img
+                  src={org.logo}
+                  alt={org.name}
+                  className="h-20 w-auto object-contain"
+                  style={{
+                    filter: 'invert(1) brightness(2)',
+                    mixBlendMode: 'screen',
+                  }}
+                />
               </div>
+
+              <div>
+                <p className="font-extrabold text-lg text-foreground group-hover:text-accent transition-colors">
+                  {org.name}
+                </p>
+                {'fullName' in org && org.fullName && (
+                  <p className="text-xs text-accent font-semibold mt-0.5">{org.fullName}</p>
+                )}
+                <p className="text-sm text-foreground/60 mt-3 leading-relaxed">
+                  {org.desc}
+                </p>
+              </div>
+
+              <span className="text-xs text-foreground/30 group-hover:text-accent transition-colors">
+                {org.url.replace('https://', '').replace(/\/$/, '')} →
+              </span>
             </motion.a>
           ))}
         </div>
