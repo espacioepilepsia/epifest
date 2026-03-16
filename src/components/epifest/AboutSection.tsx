@@ -1,11 +1,10 @@
-import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Users, Heart, Monitor } from 'lucide-react';
 
 const stats = [
-  { icon: Users, value: '+30.000', label: 'personas alcanzadas', color: 'text-accent' },
-  { icon: Heart, value: '100%', label: 'Gratuito', color: 'text-secondary' },
+  { icon: Users,   value: '+20',     label: 'charlas y talleres',   color: 'text-accent' },
+  { icon: Heart,   value: '100%',    label: 'Gratuito',             color: 'text-secondary' },
   { icon: Monitor, value: 'Híbrido', label: 'Presencial + YouTube', color: 'text-teal' },
 ];
 
@@ -16,11 +15,7 @@ const AboutSection = () => {
   return (
     <section className="section-padding" ref={ref}>
       <div className="container mx-auto max-w-5xl">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-        >
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6 }}>
           <h2 className="text-3xl md:text-5xl font-extrabold mb-6">
             ¿Qué es el <span className="text-gradient-gold">epifest</span>?
           </h2>
@@ -54,8 +49,7 @@ const AboutSection = () => {
         >
           Porque la epilepsia no define a nadie. Porque la información es poder. Porque juntos
           reducimos el estigma y empoderamos a quienes conviven con esta condición. El epifest
-          es el espacio donde pacientes, familias y profesionales se encuentran para transformar
-          realidades.
+          es el espacio donde pacientes, familias y profesionales se encuentran para transformar realidades.
         </motion.p>
       </div>
     </section>

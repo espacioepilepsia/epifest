@@ -30,36 +30,39 @@ const SponsorsSection = () => {
   }, []);
 
   return (
-    <section className="section-padding bg-muted/30" ref={ref}>
+    <section id="sponsors" className="section-padding bg-muted/30" ref={ref}>
       <div className="container mx-auto max-w-5xl">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          className="text-3xl md:text-5xl font-extrabold mb-10 text-center"
+          className="text-3xl md:text-5xl font-extrabold mb-4 text-center"
         >
-          Nos apoyan
+          Sponsors
         </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.2 }}
+          className="text-center text-foreground/50 text-sm mb-10"
+        >
+          ¿Querés sumar tu marca? <a href="#contacto" className="text-accent underline">Contactanos</a>
+        </motion.p>
 
         {loading ? (
           <div className="flex flex-wrap justify-center gap-8">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="w-32 h-20 bg-muted rounded-xl animate-pulse" />
-            ))}
+            {[1, 2, 3, 4].map(i => <div key={i} className="w-32 h-20 bg-muted rounded-xl animate-pulse" />)}
           </div>
         ) : sponsors.length === 0 ? (
           <div className="flex flex-wrap justify-center gap-6">
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2, 3, 4].map(i => (
               <div key={i} className="w-32 h-20 glass-card rounded-xl flex items-center justify-center">
                 <Building2 className="w-8 h-8 text-muted-foreground" />
               </div>
             ))}
-            <p className="w-full text-center text-foreground/50 text-sm mt-4">
-              ¿Querés sumar tu logo? <a href="#contacto" className="text-accent underline">Contactanos</a>
-            </p>
           </div>
         ) : (
           <div className="flex flex-wrap justify-center gap-8 items-center">
-            {sponsors.map((sponsor) => (
+            {sponsors.map(sponsor => (
               <motion.a
                 key={sponsor.id}
                 href={sponsor.website_url || '#'}
