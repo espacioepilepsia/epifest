@@ -24,6 +24,7 @@ import Tienda from "./pages/Tienda";
 import Dona from "./pages/Dona";
 import InscripcionPicnic from "./pages/InscripcionPicnic";
 import InscripcionEpifest from "./pages/InscripcionEpifest";
+import FloatingCTA from "./components/epifest/FloatingCTA";
 import AdminSocialLinks from "./pages/AdminSocialLinks";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <FloatingCTA />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/programa" element={<Programa />} />
