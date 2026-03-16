@@ -134,12 +134,12 @@ const HeroSection = ({ onRegisterClick }: HeroSectionProps) => {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="flex flex-col sm:flex-row gap-4"
         >
-          <button onClick={onRegisterClick} className="btn-gold text-base px-8 py-3">
+          <a href="/inscripciones-epifest" className="btn-gold text-base px-8 py-3 text-center">
             ¡Inscribite gratis!
-          </button>
+          </a>
           <a
             href="/programa"
-            className="glass-card rounded-full px-8 py-3 font-semibold text-base hover:bg-white/10 transition-colors"
+            className="glass-card rounded-full px-8 py-3 font-semibold text-base hover:bg-white/10 transition-colors text-center"
           >
             Ver programa
           </a>
