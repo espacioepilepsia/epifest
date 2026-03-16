@@ -4,15 +4,15 @@ import { motion, useInView } from 'framer-motion';
 const organizers = [
   {
     name: 'Espacio Epilepsia',
-    logo: espacioLogo,
+    logo: 'https://espacioepilepsia.org/wp-content/uploads/2020/09/Logo-Espacio-Epilepsia.png',
     url: 'https://espacioepilepsia.org/',
-    blend: 'screen' as const, // fondo violeta → screen lo fusiona
+    blend: 'screen' as const,
   },
   {
     name: 'LACE — Liga Argentina Contra la Epilepsia',
-    logo: laceLogo,
+    logo: 'https://www.lace.org.ar/images/lace-logo.png',
     url: 'https://www.lace.org.ar/',
-    blend: 'luminosity' as const, // fondo blanco → luminosity lo fusiona
+    blend: 'luminosity' as const,
   },
 ];
 
