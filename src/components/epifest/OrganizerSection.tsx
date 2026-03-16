@@ -37,7 +37,7 @@ const OrganizerSection = () => {
           Organiza
         </motion.p>
 
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-14">
           {organizers.map((org, i) => (
             <motion.div
               key={org.id}
@@ -46,18 +46,17 @@ const OrganizerSection = () => {
               transition={{ delay: i * 0.2, duration: 0.6 }}
               className="flex flex-col sm:flex-row items-center sm:items-start gap-8"
             >
-              {/* Logo clickeable */}
+              {/* Logo con fondo transparente — sin filtros */}
               <a
                 href={org.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-shrink-0 hover:opacity-80 transition-opacity"
+                className="flex-shrink-0 hover:opacity-80 transition-opacity duration-300"
               >
                 <img
                   src={org.logo}
                   alt={org.name}
-                  className="w-40 h-auto object-contain"
-                  style={{ filter: 'invert(1) brightness(2)', mixBlendMode: 'screen' }}
+                  className="w-44 h-auto object-contain"
                 />
               </a>
 
