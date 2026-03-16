@@ -1,16 +1,18 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import espacioLogo from '@/assets/espacio-epilepsia-logo.png';
+import laceLogo from '@/assets/lace-logo.png';
 
 const organizers = [
   {
     name: 'Espacio Epilepsia',
-    logo: 'https://espacioepilepsia.org/wp-content/uploads/2020/09/Logo-Espacio-Epilepsia.png',
+    logo: espacioLogo,
     url: 'https://espacioepilepsia.org/',
     blend: 'screen' as const,
   },
   {
     name: 'LACE — Liga Argentina Contra la Epilepsia',
-    logo: 'https://www.lace.org.ar/images/lace-logo.png',
+    logo: laceLogo,
     url: 'https://www.lace.org.ar/',
     blend: 'luminosity' as const,
   },
