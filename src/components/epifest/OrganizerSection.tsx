@@ -9,15 +9,14 @@ const organizers = [
     logo: espacioLogo,
     url: 'https://espacioepilepsia.org/',
     name: 'Espacio Epilepsia',
-    desc: 'Plataforma digital con el objetivo de informar, compartir experiencias y contener a las personas con epilepsia, sus familiares y amigos.',
+    desc: 'Espacio Epilepsia es una plataforma digital con el objetivo de informar, compartir experiencias y contener a las personas con epilepsia, sus familiares y amigos.',
   },
   {
     id: 'lace',
     logo: laceLogo,
     url: 'https://www.lace.org.ar/',
     name: 'LACE',
-    fullName: 'Liga Argentina Contra la Epilepsia',
-    desc: 'Primera entidad creada en Latinoamérica con el propósito de difundir los conocimientos relacionados a las epilepsias y colaborar en temas referentes al perfil social e información de la población.',
+    desc: 'La Liga Argentina Contra la Epilepsia (LACE) es la primera entidad creada en Latinoamérica con el propósito de difundir los conocimientos relacionados a las epilepsias, así como también colaborar en temas referentes al perfil social e información de la población en relación a la epilepsia.',
   },
 ];
 
@@ -27,7 +26,7 @@ const OrganizerSection = () => {
 
   return (
     <section className="py-16 px-4" ref={ref}>
-      <div className="container mx-auto max-w-5xl">
+      <div className="container mx-auto max-w-4xl">
 
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -38,49 +37,35 @@ const OrganizerSection = () => {
           Organiza
         </motion.p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="flex flex-col gap-12">
           {organizers.map((org, i) => (
-            <motion.a
+            <motion.div
               key={org.id}
-              href={org.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: i * 0.2, duration: 0.6 }}
-              className="glass-card rounded-2xl p-8 flex flex-col items-center text-center gap-5 hover:scale-[1.02] transition-transform duration-300 group"
+              className="flex flex-col sm:flex-row items-center sm:items-start gap-8"
             >
-              {/* Logo: invert hace blanco→negro y negro→blanco,
-                  luego invert de vuelta queda blanco sobre transparente
-                  gracias a brightness+contrast */}
-              <div className="h-24 flex items-center justify-center">
+              {/* Logo clickeable */}
+              <a
+                href={org.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 hover:opacity-80 transition-opacity"
+              >
                 <img
                   src={org.logo}
                   alt={org.name}
-                  className="h-20 w-auto object-contain"
-                  style={{
-                    filter: 'invert(1) brightness(2)',
-                    mixBlendMode: 'screen',
-                  }}
+                  className="w-40 h-auto object-contain"
+                  style={{ filter: 'invert(1) brightness(2)', mixBlendMode: 'screen' }}
                 />
-              </div>
+              </a>
 
-              <div>
-                <p className="font-extrabold text-lg text-foreground group-hover:text-accent transition-colors">
-                  {org.name}
-                </p>
-                {'fullName' in org && org.fullName && (
-                  <p className="text-xs text-accent font-semibold mt-0.5">{org.fullName}</p>
-                )}
-                <p className="text-sm text-foreground/60 mt-3 leading-relaxed">
-                  {org.desc}
-                </p>
-              </div>
-
-              <span className="text-xs text-foreground/30 group-hover:text-accent transition-colors">
-                {org.url.replace('https://', '').replace(/\/$/, '')} →
-              </span>
-            </motion.a>
+              {/* Texto */}
+              <p className="text-base md:text-lg text-foreground/80 leading-relaxed">
+                {org.desc}
+              </p>
+            </motion.div>
           ))}
         </div>
 
@@ -88,7 +73,7 @@ const OrganizerSection = () => {
           initial={{ scaleX: 0 }}
           animate={isInView ? { scaleX: 1 } : {}}
           transition={{ delay: 0.5, duration: 0.6 }}
-          className="mt-12 h-px bg-gradient-to-r from-transparent via-foreground/20 to-transparent"
+          className="mt-14 h-px bg-gradient-to-r from-transparent via-foreground/20 to-transparent"
         />
       </div>
     </section>
