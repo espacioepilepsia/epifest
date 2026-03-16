@@ -13,9 +13,8 @@ const PAISES = [
   'Nicaragua','Panamá','Paraguay','Perú','Puerto Rico','República Dominicana',
   'Uruguay','Venezuela',
 ];
-
-const EDAD_OPTIONS = ['0 a 18 años','18 a 25 años','25 a 35 años','35 a 45 años','Más de 45 años'];
-const GENERO_OPTIONS = ['Femenino','Masculino','Otro','Prefiero no responder'];
+const EDAD_OPTIONS    = ['0 a 18 años','18 a 25 años','25 a 35 años','35 a 45 años','Más de 45 años'];
+const GENERO_OPTIONS  = ['Femenino','Masculino','Otro','Prefiero no responder'];
 const RELACION_OPTIONS = [
   'Tengo diagnóstico de epilepsia',
   'Soy padre, madre o cuidador/a de una persona con epilepsia',
@@ -23,17 +22,18 @@ const RELACION_OPTIONS = [
   'Soy profesional de la salud y me dedico al área',
   'No tengo relación, simplemente me interesa',
 ];
-const PICNIC_OPTIONS = [
-  '¡SÍ! Reservame un lugar en el Picnic (Cupos limitados)',
-  'No puedo asistir, lo veré online',
-];
+const PICNIC_SI  = '¡SÍ! Reservame un lugar en el Picnic (Cupos limitados)';
+const PICNIC_NO  = 'No puedo asistir, lo veré online';
 
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwb9N2-mE99GqB0QuC7PL3Ul_23z85rF5BVriUwW__7ZlK1wAhZZ4DadTE-12YTl9mPCA/exec';
+const SHEETS_URL        = 'https://script.google.com/macros/s/AKfycbwb9N2-mE99GqB0QuC7PL3Ul_23z85rF5BVriUwW__7ZlK1wAhZZ4DadTE-12YTl9mPCA/exec';
+const SHEETS_PICNIC_URL = 'https://script.google.com/macros/s/AKfycbx4HywGX5k5IkhyoEgClwkagjf6lQQpCCIo5sDL-0WR7X6mFSRl6JbfyLZbOT1HKbKw/exec';
+
+type SuccessType = 'epifest' | 'epifest_picnic' | 'already_registered';
 
 const InscripcionEpifest = () => {
   const [registerOpen, setRegisterOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [successType, setSuccessType] = useState<SuccessType | null>(null);
   const [error, setError] = useState('');
   const formRef = useRef<HTMLDivElement>(null);
   const ref = useRef(null);
@@ -48,9 +48,7 @@ const InscripcionEpifest = () => {
     setError('');
 
     const fd = new FormData(e.currentTarget);
-
-    // Honeypot
-    if (fd.get('website')) { setLoading(false); setSuccess(true); return; }
+    if (fd.get('website')) { setLoading(false); setSuccessType('epifest'); return; }
 
     const name        = fd.get('name') as string;
     const email       = fd.get('email') as string;
@@ -62,59 +60,101 @@ const InscripcionEpifest = () => {
     const relacion    = fd.get('relacion') as string;
     const info        = fd.get('info') as string;
     const comentarios = fd.get('comentarios') as string;
+    const quierePicnic = picnic === PICNIC_SI;
 
-    // Google Sheets
-    if (SHEETS_URL) {
-      try {
-        await fetch(SHEETS_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, name, edad, genero, ciudad, pais, picnic, relacion, recibir_info: info, comentarios }),
-        });
-      } catch (_) {}
+    // ── Verificar si el email ya está registrado ──────────────────
+    const { data: existing } = await supabase
+      .from('contact_messages')
+      .select('id, extra_data')
+      .eq('email', email)
+      .in('type', ['general'])
+      .or('extra_data->>asunto.eq.inscripcion_epifest,extra_data->>asunto.eq.picnic')
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      setLoading(false);
+      setSuccessType('already_registered');
+      return;
     }
 
-    // Supabase
-    const { error: err } = await supabase.from('contact_messages').insert({
+    // ── Guardar en epifest Sheet ──────────────────────────────────
+    try {
+      await fetch(SHEETS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, edad, genero, ciudad, pais, picnic, relacion, recibir_info: info, comentarios }),
+      });
+    } catch (_) {}
+
+    // ── Guardar en Supabase (epifest) ─────────────────────────────
+    await supabase.from('contact_messages').insert({
       type: 'general',
-      name,
-      email,
+      name, email,
       organization: null,
       message: comentarios || '(sin comentarios)',
       extra_data: { asunto: 'inscripcion_epifest', edad, genero, ciudad, pais, picnic, relacion, recibir_info: info },
     });
 
-    // Email copia
+    // ── Si eligió picnic → también registrar en picnic Sheet y Supabase ──
+    if (quierePicnic) {
+      try {
+        await fetch(SHEETS_PICNIC_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name, ciudad, relacion, recibir_info: info, comentarios, origen: 'form_epifest' }),
+        });
+      } catch (_) {}
+
+      await supabase.from('contact_messages').insert({
+        type: 'general',
+        name, email,
+        organization: null,
+        message: '(registrado desde form epifest)',
+        extra_data: { asunto: 'picnic', ciudad, relacion, recibir_info: info, origen: 'form_epifest' },
+      });
+    }
+
+    // ── Email copia ───────────────────────────────────────────────
     try {
       await fetch('https://formsubmit.co/ajax/espacioepilepsia.arg@gmail.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
-          _subject: 'Nueva inscripción epifest! 2026',
-          _template: 'table',
-          _captcha: 'false',
+          _subject: `Nueva inscripción epifest! 2026${quierePicnic ? ' + PICNIC' : ''}`,
+          _template: 'table', _captcha: 'false',
           nombre: name, email, edad, genero, ciudad, pais,
-          picnic, relacion, recibir_info: info,
-          comentarios: comentarios || '-',
+          picnic, relacion, recibir_info: info, comentarios: comentarios || '-',
         }),
       });
     } catch (_) {}
 
     setLoading(false);
-    if (err) { setError('Hubo un error al enviar tu inscripción. Intentá de nuevo.'); }
-    else { setSuccess(true); }
+    setSuccessType(quierePicnic ? 'epifest_picnic' : 'epifest');
+  };
+
+  const SuccessMessages: Record<SuccessType, { emoji: string; title: string; body: string }> = {
+    epifest: {
+      emoji: '🎉',
+      title: '¡Gracias! Tu lugar en el epifest fue reservado.',
+      body: '24 horas antes del evento te enviaremos los enlaces de participación a tu correo. ¡Nos vemos el 26 y 27 de marzo!',
+    },
+    epifest_picnic: {
+      emoji: '🎉',
+      title: '¡Gracias! Tu lugar en el epifest y en el picnic fue reservado.',
+      body: 'Nos vemos el 26 y 27 de marzo en el congreso, y el viernes 27 en Plaza Mafalda para el picnic. ¡Te esperamos!',
+    },
+    already_registered: {
+      emoji: '💜',
+      title: 'Gracias, tu lugar ya ha sido reservado con anterioridad.',
+      body: 'Ya tenemos tu inscripción registrada. Si tenés alguna duda escribinos a contacto@espacioepilepsia.org.',
+    },
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO
-        title="Inscripción epifest! 2026"
-        description="Inscribite al epifest! 2026 — Congreso Latinoamericano de Epilepsia. 26 y 27 de marzo. Híbrido, streaming 100% gratuito para toda Latinoamérica."
-        canonical="/inscripciones-epifest"
-      />
+      <SEO title="Inscripción epifest! 2026" description="Inscribite al epifest! 2026 — Congreso Latinoamericano de Epilepsia. 26 y 27 de marzo. Híbrido, streaming 100% gratuito para toda Latinoamérica." canonical="/inscripciones-epifest" />
       <Header onRegisterClick={() => setRegisterOpen(true)} />
 
-      {/* Hero */}
       <div className="relative pt-24 pb-12 px-4 overflow-hidden" ref={ref}>
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-primary/30 blur-[140px]" />
@@ -126,36 +166,21 @@ const InscripcionEpifest = () => {
               <span className="text-3xl">💜</span>
               <span className="text-xs font-bold uppercase tracking-[0.3em] text-accent">epifest! 2026 · 5ta Edición</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4">
-              Inscripción al<br />
-              <span className="text-gradient-gold">epifest! 2026</span>
-            </h1>
-            <p className="text-xl font-bold text-foreground/90 mb-4">
-              ¡Tu diagnóstico no es tu límite! Sumate al Epifest 2026 💜✨
-            </p>
-            <p className="text-base text-foreground/60 leading-relaxed mb-8">
-              El Congreso Latinoamericano de Epilepsia organizado por la <span className="font-semibold text-foreground">Fundación Espacio Epilepsia</span> en su 10.º aniversario. Un espacio hecho "con y para" la comunidad.
-            </p>
+            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4">Inscripción al<br /><span className="text-gradient-gold">epifest! 2026</span></h1>
+            <p className="text-xl font-bold text-foreground/90 mb-4">¡Tu diagnóstico no es tu límite! Sumate al Epifest 2026 💜✨</p>
+            <p className="text-base text-foreground/60 leading-relaxed mb-8">El Congreso Latinoamericano de Epilepsia organizado por la <span className="font-semibold text-foreground">Fundación Espacio Epilepsia</span> en su 10.º aniversario. Un espacio hecho "con y para" la comunidad.</p>
 
-            {/* Info cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
               <div className="glass-card rounded-2xl p-5 flex items-start gap-3">
                 <Calendar className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-bold text-sm">26 y 27 de marzo de 2026</p>
-                  <p className="text-xs text-foreground/50">Dos días de congreso</p>
-                </div>
+                <div><p className="font-bold text-sm">26 y 27 de marzo de 2026</p><p className="text-xs text-foreground/50">Dos días de congreso</p></div>
               </div>
               <div className="glass-card rounded-2xl p-5 flex items-start gap-3">
                 <Monitor className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-bold text-sm">Modalidad Híbrida</p>
-                  <p className="text-xs text-foreground/50">Streaming 100% gratuito para Latinoamérica</p>
-                </div>
+                <div><p className="font-bold text-sm">Modalidad Híbrida</p><p className="text-xs text-foreground/50">Streaming 100% gratuito para Latinoamérica</p></div>
               </div>
             </div>
 
-            {/* Qué espera */}
             <div className="glass-card rounded-2xl p-6 mb-8">
               <p className="font-bold text-sm text-foreground/50 uppercase tracking-widest mb-4">¿Qué te espera en estos dos días?</p>
               <div className="space-y-3">
@@ -167,102 +192,67 @@ const InscripcionEpifest = () => {
                 ].map(item => (
                   <div key={item.title} className="flex gap-3">
                     <span className="text-xl flex-shrink-0">{item.emoji}</span>
-                    <p className="text-sm text-foreground/70 leading-relaxed">
-                      <span className="font-semibold text-foreground">{item.title}:</span> {item.desc}
-                    </p>
+                    <p className="text-sm text-foreground/70 leading-relaxed"><span className="font-semibold text-foreground">{item.title}:</span> {item.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <p className="text-sm text-foreground/50 italic mb-2">
-              📧 24 horas antes del evento te enviaremos los enlaces de participación por correo electrónico.
-            </p>
-            <p className="font-bold text-foreground/90 mb-8">
-              ¡Inscribite a continuación y ayudanos a preparar todo para recibirte!
-            </p>
-
-            <button onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth' })} className="btn-gold text-base">
-              ¡Inscribite gratis!
-            </button>
+            <p className="text-sm text-foreground/50 italic mb-6">📧 24 horas antes del evento te enviaremos los enlaces de participación por correo electrónico.</p>
+            <button onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth' })} className="btn-gold text-base">¡Inscribite gratis!</button>
           </motion.div>
         </div>
       </div>
 
-      {/* Formulario */}
       <section className="px-4 pb-28" ref={formRef}>
         <div className="container mx-auto max-w-xl">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-2xl md:text-3xl font-extrabold mb-8 text-center"
-          >
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-2xl md:text-3xl font-extrabold mb-8 text-center">
             Completá tu inscripción
           </motion.h2>
 
-          {success ? (
+          {successType ? (
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card rounded-2xl p-10 text-center">
-              <CheckCircle className="w-14 h-14 text-accent mx-auto mb-4" />
-              <p className="text-xl font-bold mb-2">¡Gracias por inscribirte! 💜</p>
-              <p className="text-foreground/70 text-base leading-relaxed">
-                24 horas antes del evento te enviaremos los enlaces de participación a tu correo. ¡Nos vemos el <span className="font-semibold text-foreground">26 y 27 de marzo</span>!
-              </p>
+              <span className="text-5xl mb-4 block">{SuccessMessages[successType].emoji}</span>
+              <p className="text-xl font-bold mb-3">{SuccessMessages[successType].title}</p>
+              <p className="text-foreground/70 text-base leading-relaxed">{SuccessMessages[successType].body}</p>
             </motion.div>
           ) : (
-            <motion.form
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              onSubmit={handleSubmit}
-              className="glass-card rounded-2xl p-6 md:p-8 space-y-5"
-            >
-              {/* Honeypot */}
+            <motion.form initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} onSubmit={handleSubmit} className="glass-card rounded-2xl p-6 md:p-8 space-y-5">
               <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
                 <input name="website" type="text" tabIndex={-1} autoComplete="off" />
               </div>
 
               {[
-                { name: 'email', label: 'Correo electrónico', type: 'email', placeholder: 'tucorreo@ejemplo.com', required: true },
-                { name: 'name',  label: 'Nombre y Apellido',  type: 'text', placeholder: 'Tu nombre completo',    required: true },
+                { name: 'email', label: 'Correo electrónico', type: 'email', placeholder: 'tucorreo@ejemplo.com' },
+                { name: 'name',  label: 'Nombre y Apellido',  type: 'text', placeholder: 'Tu nombre completo' },
               ].map(f => (
                 <div key={f.name}>
                   <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">{f.label} *</label>
-                  <input name={f.name} type={f.type} required={f.required} placeholder={f.placeholder} className={inputClass} />
+                  <input name={f.name} type={f.type} required placeholder={f.placeholder} className={inputClass} />
                 </div>
               ))}
 
-              {/* Edad */}
-              <div>
-                <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">Edad *</label>
-                <div className="relative">
-                  <select name="edad" required defaultValue="" className={selectClass}>
-                    <option value="" disabled>Seleccioná tu rango de edad</option>
-                    {EDAD_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center"><svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg></div>
+              {[
+                { name: 'edad',   label: 'Edad',   options: EDAD_OPTIONS,   placeholder: 'Seleccioná tu rango de edad' },
+                { name: 'genero', label: 'Género', options: GENERO_OPTIONS,  placeholder: 'Seleccioná una opción' },
+              ].map(s => (
+                <div key={s.name}>
+                  <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">{s.label} *</label>
+                  <div className="relative">
+                    <select name={s.name} required defaultValue="" className={selectClass}>
+                      <option value="" disabled>{s.placeholder}</option>
+                      {s.options.map(o => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center"><svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg></div>
+                  </div>
                 </div>
-              </div>
+              ))}
 
-              {/* Género */}
-              <div>
-                <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">Género *</label>
-                <div className="relative">
-                  <select name="genero" required defaultValue="" className={selectClass}>
-                    <option value="" disabled>Seleccioná una opción</option>
-                    {GENERO_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center"><svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg></div>
-                </div>
-              </div>
-
-              {/* Ciudad */}
               <div>
                 <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">Ciudad de residencia *</label>
                 <input name="ciudad" required placeholder="Ej: Buenos Aires" className={inputClass} />
               </div>
 
-              {/* País */}
               <div>
                 <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">País de residencia *</label>
                 <div className="relative">
@@ -274,20 +264,19 @@ const InscripcionEpifest = () => {
                 </div>
               </div>
 
-              {/* Picnic */}
               <div>
                 <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">📍 ¿Estás en Buenos Aires o alrededores? *</label>
                 <p className="text-xs text-accent mb-2">Invitación al Picnic Presencial Exclusivo — viernes 27 de marzo a las 16:00 hs</p>
                 <div className="relative">
                   <select name="picnic" required defaultValue="" className={selectClass}>
                     <option value="" disabled>Seleccioná una opción</option>
-                    {PICNIC_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                    <option value={PICNIC_SI}>{PICNIC_SI}</option>
+                    <option value={PICNIC_NO}>{PICNIC_NO}</option>
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center"><svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg></div>
                 </div>
               </div>
 
-              {/* Relación */}
               <div>
                 <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">¿Cuál es tu relación con la epilepsia? *</label>
                 <div className="relative">
@@ -299,7 +288,6 @@ const InscripcionEpifest = () => {
                 </div>
               </div>
 
-              {/* Recibir info */}
               <div>
                 <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">¿Te interesa recibir información sobre epilepsia y próximos eventos? *</label>
                 <div className="relative">
@@ -312,18 +300,12 @@ const InscripcionEpifest = () => {
                 </div>
               </div>
 
-              {/* Comentarios */}
               <div>
-                <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">
-                  Comentarios <span className="text-foreground/30 normal-case font-normal">(opcional)</span>
-                </label>
+                <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">Comentarios <span className="text-foreground/30 normal-case font-normal">(opcional)</span></label>
                 <textarea name="comentarios" placeholder="¿Algo que quieras contarnos?" rows={3} className={inputClass} />
               </div>
 
-              <p className="text-xs text-foreground/40 italic">
-                📧 24 horas antes del evento te enviaremos los enlaces de participación por correo electrónico.
-              </p>
-
+              <p className="text-xs text-foreground/40 italic">📧 24 horas antes del evento te enviaremos los enlaces de participación por correo electrónico.</p>
               {error && <p className="text-destructive text-sm">{error}</p>}
 
               <button type="submit" disabled={loading} className="btn-gold w-full flex items-center justify-center gap-2 disabled:opacity-50">
