@@ -23,10 +23,8 @@ const OrganizerSection = () => {
   const isInView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section className="section-padding bg-muted/30" ref={ref}>
+    <section className="section-padding" style={{ backgroundColor: '#26114a' }} ref={ref}>
       <div className="container mx-auto max-w-5xl">
-
-        {/* Título coherente con SponsorsSection */}
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -54,10 +52,8 @@ const OrganizerSection = () => {
                   src={org.logo}
                   alt={org.id}
                   className="w-44 h-auto object-contain"
-                  style={{ filter: 'brightness(0) invert(1)' }}
                 />
               </a>
-
               <p className="text-base md:text-lg text-foreground/80 leading-relaxed">
                 {org.desc}
               </p>
