@@ -1,7 +1,5 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import espacioLogo from '@/assets/espacio-epilepsia-logo.png';
-import laceLogo from '@/assets/lace-logo.png';
 
 const organizers = [
   {
