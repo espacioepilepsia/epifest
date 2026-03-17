@@ -77,7 +77,8 @@ const SponsorsSection = () => {
                   <img
                     src={sponsor.logo_url}
                     alt={sponsor.name}
-                    className="h-24 md:h-32 w-auto object-contain"
+                    className="h-32 md:h-40 w-auto object-contain"
+                    style={{ minWidth: '200px', minHeight: '200px' }}
                   />
                 ) : (
                   <div className="h-24 w-40 flex items-center justify-center">
