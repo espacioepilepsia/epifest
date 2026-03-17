@@ -3,35 +3,35 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <url>
-    <loc>https://epifest.lovable.app/</loc>
+    <loc>https://epifest.com.ar/</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://epifest.lovable.app/programa</loc>
+    <loc>https://epifest.com.ar/programa</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://epifest.lovable.app/oradores</loc>
+    <loc>https://epifest.com.ar/oradores</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://epifest.lovable.app/tienda</loc>
+    <loc>https://epifest.com.ar/tienda</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://epifest.lovable.app/dona</loc>
+    <loc>https://epifest.com.ar/dona</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
