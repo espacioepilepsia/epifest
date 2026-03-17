@@ -61,8 +61,8 @@ const SponsorsSection = () => {
             ))}
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-8 items-center">
-            {sponsors.map(sponsor => (
+          <div className="flex flex-wrap justify-center gap-10 items-center">
+            {sponsors.map((sponsor, i) => (
               <motion.a
                 key={sponsor.id}
                 href={sponsor.website_url || '#'}
@@ -70,12 +70,17 @@ const SponsorsSection = () => {
                 rel="noopener noreferrer"
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
-                className="glass-card rounded-xl p-4 hover:scale-105 transition-transform"
+                transition={{ delay: i * 0.1 }}
+                className="flex items-center justify-center hover:scale-105 transition-transform duration-300"
               >
                 {sponsor.logo_url ? (
-                  <img src={sponsor.logo_url} alt={sponsor.name} className="h-16 object-contain" />
+                  <img
+                    src={sponsor.logo_url}
+                    alt={sponsor.name}
+                    className="h-24 md:h-32 w-auto object-contain"
+                  />
                 ) : (
-                  <div className="h-16 w-28 flex items-center justify-center">
+                  <div className="h-24 w-40 flex items-center justify-center">
                     <span className="text-sm font-bold text-foreground/60">{sponsor.name}</span>
                   </div>
                 )}
