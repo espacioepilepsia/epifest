@@ -110,9 +110,9 @@ const Footer = () => {
                 href="https://cerrolab.com.ar/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-foreground/60 transition-colors"
+                className="text-accent/60 hover:text-accent transition-colors font-medium"
               >
-                Desarrollado por Cerro Lab — Laboratorio de IA
+                ⚡ Desarrollado por Cerro Lab — Laboratorio de IA
               </a>
             </div>
           </div>
