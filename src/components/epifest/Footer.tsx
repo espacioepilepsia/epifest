@@ -99,9 +99,22 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-border/20 flex flex-col md:flex-row justify-between gap-2 text-xs text-foreground/40">
-            <p>Evento 100% gratuito | Con registro previo</p>
-            <p>#epifest2026</p>
+          <div className="mt-8 pt-6 border-t border-border/20 space-y-2">
+            <div className="flex flex-col md:flex-row justify-between gap-2 text-xs text-foreground/40">
+              <p>Evento 100% gratuito | Con registro previo</p>
+              <p>#epifest2026</p>
+            </div>
+            <div className="flex flex-col md:flex-row justify-between gap-2 text-xs text-foreground/30">
+              <p>epifest! 2026 ™ — Todos los derechos reservados · Fundación Espacio Epilepsia</p>
+              <a
+                href="https://cerrolab.com.ar/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground/60 transition-colors"
+              >
+                Desarrollado por Cerro Lab — Laboratorio de IA
+              </a>
+            </div>
           </div>
         </div>
       </div>
