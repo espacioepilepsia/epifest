@@ -61,7 +61,7 @@ const Countdown = () => {
         <span className="text-2xl md:text-4xl font-extrabold text-accent mb-3 md:mb-4 leading-none">:</span>
         <CountdownUnit value={time.seconds} label="segundos" />
       </div>
-      <p className="text-xs text-muted-foreground">26 de marzo de 2026 · 10:00 hs (ARG)</p>
+      <p className="text-xs text-muted-foreground">27 de marzo de 2026 · 10:00 hs (ARG)</p>
     </div>
   );
 };
@@ -95,7 +95,7 @@ const HeroSection = ({ onRegisterClick }: HeroSectionProps) => {
           transition={{ duration: 0.6 }}
         >
           <span className="glass-card rounded-full px-4 py-1 text-xs font-semibold text-accent uppercase tracking-widest">
-            5° Edición · 25 y 26 de marzo 2026
+            5° Edición · 26 y 27 de marzo 2026
           </span>
         </motion.div>
 
