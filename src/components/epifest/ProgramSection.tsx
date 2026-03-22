@@ -135,8 +135,8 @@ const ProgramSection = () => {
 
         <p className="font-handwritten text-xl text-accent mb-8">
           {activeDay === 1
-            ? '"Conocer es Poder" — Teoría Médica · 25 de marzo 2026'
-            : '"Mi Vida, Mi Ritmo" — Estilo de Vida y Futuro · 26 de marzo 2026'}
+            ? '"Conocer es Poder" — Teoría Médica · 26 de marzo 2026'
+            : '"Mi Vida, Mi Ritmo" — Estilo de Vida y Futuro · 27 de marzo 2026'}
         </p>
 
         {/* Loading state */}
