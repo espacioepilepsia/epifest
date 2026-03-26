@@ -25,8 +25,7 @@ const RELACION_OPTIONS = [
 const PICNIC_SI  = '¡SÍ! Reservame un lugar en el Picnic (Cupos limitados)';
 const PICNIC_NO  = 'No puedo asistir, lo veré online';
 
-const SHEETS_URL        = 'https://script.google.com/macros/s/AKfycbwb9N2-mE99GqB0QuC7PL3Ul_23z85rF5BVriUwW__7ZlK1wAhZZ4DadTE-12YTl9mPCA/exec';
-const SHEETS_PICNIC_URL = 'https://script.google.com/macros/s/AKfycbx4HywGX5k5IkhyoEgClwkagjf6lQQpCCIo5sDL-0WR7X6mFSRl6JbfyLZbOT1HKbKw/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbykxyzNesJlgC2uGoEgog6GF9X-a9xrl2Z8Ju9K4KN-WE3dnePCxBbM-hX4ctH7JMo8/exec';
 
 type SuccessType = 'epifest' | 'epifest_picnic' | 'already_registered';
 
@@ -35,6 +34,8 @@ const InscripcionEpifest = () => {
   const [loading, setLoading] = useState(false);
   const [successType, setSuccessType] = useState<SuccessType | null>(null);
   const [error, setError] = useState('');
+  const [picnicSelection, setPicnicSelection] = useState('');
+  
   const formRef = useRef<HTMLDivElement>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -77,42 +78,61 @@ const InscripcionEpifest = () => {
       return;
     }
 
-    // ── Guardar en epifest Sheet ──────────────────────────────────
+    // ── Guardar en Supabase (registrations) ───────────────────────
+    const profileMap: Record<string, string> = {
+      'Tengo diagnóstico de epilepsia': 'paciente',
+      'Soy padre, madre o cuidador/a de una persona con epilepsia': 'familiar',
+      'Soy otro tipo de familiar o tengo amistad con una persona con epilepsia': 'familiar',
+      'Soy profesional de la salud y me dedico al área': 'profesional',
+      'No tengo relación, simplemente me interesa': 'otro'
+    };
+
+    await supabase.from('registrations').insert({
+      name,
+      email,
+      country: pais,
+      profile: profileMap[relacion] || 'otro'
+    });
+
+    // ── Guardar en epifest Sheet (Plan B: JSON + text/plain) ──────
     try {
+      const payload = {
+        'Dirección de correo electrónico': email,
+        'Nombre y Apellido': name,
+        'Edad': edad,
+        'Género ': genero,
+        'Ciudad de residencia': ciudad,
+        'País de residencia': pais,
+        'picnic_largo': picnic,
+        'relacion': relacion,
+        'info': info,
+        'comentarios': comentarios || '',
+        'restricciones': fd.get('restricciones') || '-',
+        'cantidad': fd.get('cantidad') || '1',
+        'tipo': 'epifest'
+      };
+
       await fetch(SHEETS_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, edad, genero, ciudad, pais, picnic, relacion, recibir_info: info, comentarios }),
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload),
       });
     } catch (_) {}
-
-    // ── Guardar en Supabase (epifest) ─────────────────────────────
+    // ── Guardar en Supabase (contact_messages como backup) ─────────
     await supabase.from('contact_messages').insert({
       type: 'general',
       name, email,
       organization: null,
       message: comentarios || '(sin comentarios)',
-      extra_data: { asunto: 'inscripcion_epifest', edad, genero, ciudad, pais, picnic, relacion, recibir_info: info },
+      extra_data: { 
+        asunto: 'inscripcion_epifest', 
+        edad, genero, ciudad, pais, picnic, relacion, 
+        recibir_info: info,
+        restricciones: fd.get('restricciones') as string,
+        cantidad: fd.get('cantidad') as string
+      },
     });
-
-    // ── Si eligió picnic → también registrar en picnic Sheet y Supabase ──
-    if (quierePicnic) {
-      try {
-        await fetch(SHEETS_PICNIC_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, name, ciudad, relacion, recibir_info: info, comentarios, origen: 'form_epifest' }),
-        });
-      } catch (_) {}
-
-      await supabase.from('contact_messages').insert({
-        type: 'general',
-        name, email,
-        organization: null,
-        message: '(registrado desde form epifest)',
-        extra_data: { asunto: 'picnic', ciudad, relacion, recibir_info: info, origen: 'form_epifest' },
-      });
-    }
 
     // ── Email copia ───────────────────────────────────────────────
     try {
@@ -127,6 +147,7 @@ const InscripcionEpifest = () => {
         }),
       });
     } catch (_) {}
+
 
     setLoading(false);
     setSuccessType(quierePicnic ? 'epifest_picnic' : 'epifest');
@@ -268,7 +289,13 @@ const InscripcionEpifest = () => {
                 <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">📍 ¿Estás en Buenos Aires o alrededores? *</label>
                 <p className="text-xs text-accent mb-2">Invitación al Picnic Presencial Exclusivo — viernes 27 de marzo a las 16:00 hs</p>
                 <div className="relative">
-                  <select name="picnic" required defaultValue="" className={selectClass}>
+                  <select 
+                    name="picnic" 
+                    required 
+                    defaultValue="" 
+                    className={selectClass}
+                    onChange={(e) => setPicnicSelection(e.target.value)}
+                  >
                     <option value="" disabled>Seleccioná una opción</option>
                     <option value={PICNIC_SI}>{PICNIC_SI}</option>
                     <option value={PICNIC_NO}>{PICNIC_NO}</option>
@@ -276,6 +303,19 @@ const InscripcionEpifest = () => {
                   <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center"><svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg></div>
                 </div>
               </div>
+
+              {picnicSelection === PICNIC_SI && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-5 overflow-hidden">
+                  <div>
+                    <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">¿Tenes alguna restricción alimentaria? <span className="text-foreground/30 normal-case font-normal">(opcional)</span></label>
+                    <input name="restricciones" placeholder="Ej: Celiquía, Vegano, ninguna..." className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">¿Cuántas personas vienen al picnic con vos? *</label>
+                    <input name="cantidad" type="number" min="1" required defaultValue="1" className={inputClass} />
+                  </div>
+                </motion.div>
+              )}
 
               <div>
                 <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">¿Cuál es tu relación con la epilepsia? *</label>

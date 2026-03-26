@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, MessageSquare, Mic, Package } from 'lucide-react';
+import { Users, MessageSquare, Mic, Package, RefreshCw } from 'lucide-react';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ registrations: 0, unreadMessages: 0, speakers: 0, products: 0 });
@@ -34,9 +34,56 @@ const AdminDashboard = () => {
     { label: 'Productos activos', value: stats.products, icon: Package, color: 'text-coral' },
   ];
 
+  const syncToPerfit = async () => {
+    // 1. Obtener todos los mensajes para ver el campo 'recibir_info'
+    const { data: msgs } = await supabase.from('contact_messages')
+      .select('*')
+      .or('extra_data->>recibir_info.eq.Sí,extra_data->>recibir_info.eq.si');
+
+    if (!msgs || msgs.length === 0) {
+      alert('No se encontraron inscripciones que aceptaran recibir información.');
+      return;
+    }
+
+    if (!confirm(`¿Sincronizar ${msgs.length} contactos con Perfit (Lista 37)?`)) return;
+
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbykxyzNesJlgC2uGoEgog6GF9X-a9xrl2Z8Ju9K4KN-WE3dnePCxBbM-hX4ctH7JMo8/exec';
+
+    let count = 0;
+    for (const m of msgs) {
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({
+            'tipo': 'perfit_sync',
+            'email': m.email,
+            'name': m.name
+          }),
+        });
+        count++;
+      } catch (e) {
+        console.error('Error sincronizando Perfit:', m.email, e);
+      }
+    }
+
+    alert(`¡Sincronización con Perfit finalizada! Se procesaron ${count} contactos.`);
+  };
+
+
   return (
     <div>
-      <h2 className="text-2xl font-extrabold mb-6">Dashboard</h2>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+        <h2 className="text-2xl font-extrabold">Dashboard</h2>
+        <div className="flex gap-2">
+          <button onClick={syncToPerfit} className="flex items-center gap-2 text-[10px] bg-indigo-600 text-white hover:opacity-90 py-2 px-4 rounded-xl font-bold transition-all shadow-md uppercase tracking-wider">
+            <RefreshCw className="w-3 h-3" />
+            Sincronizar a Perfit
+          </button>
+        </div>
+      </div>
+      
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {cards.map((c) => (
           <div key={c.label} className="glass-card rounded-2xl p-6">
