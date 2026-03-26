@@ -25,7 +25,7 @@ const RELACION_OPTIONS = [
 const PICNIC_SI  = '¡SÍ! Reservame un lugar en el Picnic (Cupos limitados)';
 const PICNIC_NO  = 'No puedo asistir, lo veré online';
 
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbykxyzNesJlgC2uGoEgog6GF9X-a9xrl2Z8Ju9K4KN-WE3dnePCxBbM-hX4ctH7JMo8/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycby8Br9NewMUC0joB5252UFBkRNk1R8XVLdmFCo6PHiYgOnGiPNBDsPWfqvJ8TGnhXSn/exec';
 
 type SuccessType = 'epifest' | 'epifest_picnic' | 'already_registered';
 
